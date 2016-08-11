@@ -51,6 +51,7 @@ class LinkList:
 
     # 插入一个数组
     def insert_all(self, data, index=0):
+        self._check_position(index)
         self._insert_all(data, index)
 
     # 插入到某个角标的位置
@@ -216,7 +217,6 @@ class LinkList:
 
     # 从某个角标后开始插入一个数组
     def _insert_all(self, data, index):
-        self._check_position(index)
         data_length = len(data)
         if data_length == 0:
             return False
@@ -236,7 +236,7 @@ class LinkList:
             pred = new_node
 
         if successor is None:
-            last = pred
+            self.last = pred
         else:
             pred.next = successor
             successor.prev = pred
@@ -258,15 +258,5 @@ class LinkList:
 
 if __name__ == "__main__":
     link_list = LinkList()
-    link_list.insert(12)
-    link_list.insert(13)
-
-    link_list.show()
-
-    link_list.remove_last()
-    link_list.show()
-    print(link_list)
-
-
-
-
+    l = list("love")
+    link_list.insert_all(l)
