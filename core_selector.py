@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 import re
 from adt.link_list import LinkList
+from adt.tag import TagTree
 from pquery_exception import IllegalExpression
 
 
 # expression = "#div"
-class Document:
+class Document(object):
     def __init__(self, document, expression=None):
-        if expression is None:
-            self.document = document
-        else:
-            self.parser(document, expression)
+        self.document = document
+        self.parser(expression)
 
-    def parser(self, document, expression):
+    def parser(self, expression):
         expression_rule = LinkList()  # 构造规则字典
         self._check_expression(expression)
         expression_link = LinkList()
@@ -20,7 +19,8 @@ class Document:
 
         while expression_link.size > 1:
             expression_rule.insert_last(self._get_expression(expression_link))
-        expression_rule.show()
+
+        tag_tree = TagTree(self.document)
 
     @staticmethod
     def _get_expression(expression_link, flag=0):
@@ -50,7 +50,6 @@ class Document:
             array = result.split("=")
             result_tuple = ('and', array[0], array[1])
 
-        print(result_tuple)
         return result_tuple
 
     # 检查表达式是否合法
@@ -62,3 +61,4 @@ class Document:
             raise IllegalExpression
         if not re.match(r"^[#|\w|\.|*].+", expression):
             raise IllegalExpression
+

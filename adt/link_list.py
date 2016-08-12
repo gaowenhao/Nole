@@ -19,9 +19,22 @@ class LinkList:
         self.first = None
         self.last = None
         self.size = 0
+        self.current = None
 
     def __str__(self):
         return "first : %s  ;  last : %s  ;  size : %s " % (self.first.data, self.last.data, self.size)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        if self.current is not None:
+            self.current = self.current.next
+        else:
+            self.current = self.first
+        if self.current is None:
+            raise StopIteration
+        return self.current
 
     # 遍历链表
     def show(self):
