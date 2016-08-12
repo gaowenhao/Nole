@@ -46,7 +46,7 @@ class Document(object):
         elif first_symbol == "*":
             result_tuple = ('and', 'tag', '*')
         elif first_symbol == "[":
-            expression_link.poll_first() # 把最后一个中括号弹出
+            expression_link.poll_first()  # 把最后一个中括号弹出
             array = result.split("=")
             result_tuple = ('and', array[0], array[1])
 
