@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 import re
 from adt.link_list import LinkList
-from adt.tag import TagTree
-from pquery_exception import IllegalExpression
+from exception.exception import IllegalExpression
+from collections import deque
 
 
-# expression = "#div"
-class Document(object):
-    def __init__(self, document, expression=None):
-        self.document = document
-        self.parser(expression)
+# expression = "#div"  其实这个类都不应该存在。
+class ExpressionParser(object):
+    def __init__(self):
+        pass
 
-    def parser(self, expression):
+    @staticmethod
+    def parser(expression):
         expression_rule = LinkList()  # 构造规则字典
-        self._check_expression(expression)
+        ExpressionParser._check_expression(expression)
         expression_link = LinkList()
         expression_link.insert_all(list(expression))
 
         while expression_link.size > 1:
-            expression_rule.insert_last(self._get_expression(expression_link))
+            expression_rule.insert_last(ExpressionParser._get_expression(expression_link))
 
-        tag_tree = TagTree(self.document)
+        return expression_rule
 
     @staticmethod
     def _get_expression(expression_link, flag=0):
@@ -38,17 +38,17 @@ class Document(object):
             result += expression_link.poll_first().data
 
         if first_symbol == "#":
-            result_tuple = ('and', 'id', result)
+            result_tuple = ('id', result)
         elif first_symbol == ".":
-            result_tuple = ('and', 'class', result)
+            result_tuple = ('class', result)
         elif re.match(r'\w.*', first_symbol):
-            result_tuple = ('and', 'tag', result)
+            result_tuple = ('tag', result)
         elif first_symbol == "*":
-            result_tuple = ('and', 'tag', '*')
+            result_tuple = ('tag', '*')
         elif first_symbol == "[":
             expression_link.poll_first()  # 把最后一个中括号弹出
             array = result.split("=")
-            result_tuple = ('and', array[0], array[1])
+            result_tuple = (array[0], array[1])
 
         return result_tuple
 
@@ -62,3 +62,17 @@ class Document(object):
         if not re.match(r"^[#|\w|\.|*].+", expression):
             raise IllegalExpression
 
+
+class BodyParser(object):
+    def __init__(self, document):
+        self.tree = deque([])
+        self.document = BodyParser._getbody(document)
+        BodyParser._build_tree(self.document)
+
+    @staticmethod
+    def _build_tree(body):
+        print(re.findall('<\w+[\w|\s|"|\'|=]*>', body))
+
+    @staticmethod
+    def _getbody(document):
+        return re.search('<body(.|\s)*</body>', document).group()
