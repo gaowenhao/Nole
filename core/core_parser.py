@@ -70,9 +70,10 @@ class BodyParser(object):
         BodyParser._build_tree(self.document)
 
     @staticmethod
-    def _build_tree(body):
-        print(re.findall('<\w+[\w|\s|"|\'|=]*>', body))
+    def _build_tree(body_array):
+        print(body_array)
 
     @staticmethod
     def _getbody(document):
-        return re.search('<body(.|\s)*</body>', document).group()
+        body = re.search('<body(.|\s)*</body>', document).group()
+        return deque(re.findall('<\w+[\w|\s|"|\'|=]*>', body))
