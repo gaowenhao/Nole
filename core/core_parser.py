@@ -2,7 +2,7 @@
 import re
 from adt.link_list import LinkList
 from exception.exception import IllegalExpression
-from collections import deque
+from lxml import etree
 
 
 # expression = "#div"  其实这个类都不应该存在。
@@ -63,17 +63,28 @@ class ExpressionParser(object):
             raise IllegalExpression
 
 
-class BodyParser(object):
-    def __init__(self, document):
-        self.tree = deque([])
-        self.document = BodyParser._getbody(document)
-        BodyParser._build_tree(self.document)
+def getResult(body,expressions):
+    xpath = "//"
 
-    @staticmethod
-    def _build_tree(body_array):
-        print(body_array)
+    for expression in iter(expressions):
+        if expression.data[0] == "tag":
+            xpath += expression.data[1]
+        elif expression.data[0] == "less":
+            xpath += "//"
+        else:
+            if xpath.endswith("/"):
+                xpath += "*"
+            xpath += '[@%s="%s"]' % (expression.data)
+    temp_result = []
+    page = etree.HTML(body)
+    result = page.xpath(xpath)
+    for val in result:
+        for text in val.itertext():
+            temp_result.append(text + "\n")
+    return temp_result
 
-    @staticmethod
-    def _getbody(document):
-        body = re.search('<body(.|\s)*</body>', document).group()
-        return deque(re.findall('<\w+[\w|\s|"|\'|=]*>', body))
+
+def _clear_tag(tag):
+    for subtag in list(tag):
+        tag.remove(subtag)
+    return tag
